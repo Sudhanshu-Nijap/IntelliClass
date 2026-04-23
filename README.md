@@ -1,63 +1,96 @@
-# IntelliClass
+# 🎓 IntelliClass
 
-IntelliClass is a modern, AI-powered academic platform designed to streamline the educational experience for students, teachers, and administrators. It leverages artificial intelligence to automate assessment creation and provides real-time collaborative features for enhanced classroom engagement.
+**IntelliClass** is a high-performance, privacy-conscious Learning Management System (LMS) designed to optimize student and teacher productivity through advanced automation and real-time analytics. Unlike traditional platforms, IntelliClass leverages **custom algorithmic engines** and **rule-based NLP** to provide a secure, fast, and highly engaging educational experience.
 
-## Core Tech Stack
+---
 
-- **MERN Stack**: Built on MongoDB, Express, React, and Node.js for a robust, full-stack foundation.
-- **Google Gemini AI**: Powers the AI Teaching Assistant for automated quiz generation and study material summarization.
-- **Socket.io**: Enables real-time features including live leaderboards, instant notifications, and interactive discussions.
-- **Deepgram API**: High-accuracy speech-to-text engine for converting recorded audio into searchable transcripts.
-- **SerpApi**: Facilitates synchronized YouTube search and transcript fetching for video-based learning modules.
-- **Tailwind CSS (v4)**: Implements a fully responsive, high-contrast Neo-Brutalist design system.
-- **Jitsi Meet**: Integrated open-source video conferencing for virtual classrooms.
+## 🚀 Key Features
 
-## Role-Based Features
+### 🧠 Algorithmic Quiz Engine
+*   **Automated MCQ Generation**: Uses custom NLP logic (TF-IDF and Porter Stemming) to extract key concepts from study materials and transcripts to generate relevant quizzes instantly.
+*   **Context-Aware Scoring**: An algorithmic scoring system evaluates sentence quality to ensure high-relevance assessment questions.
 
-### Administrator
-- Comprehensive user management for student and teacher accounts.
-- Institutional oversight including subject categorization and course structure management.
-- Platform-wide academic analytics and security audit logs.
-- Global monitoring of resources, quizzes, and active classrooms.
+### 🤖 Rule-Based Smart Assistant
+*   **Privacy-First Insights**: A personal study assistant that uses **Levenshtein Distance fuzzy matching** to answer student queries about their performance, strengths, and weaknesses.
+*   **Intent Dispatcher**: Advanced logic to understand student goals (stats, history, topic mastery) without sending data to external LLMs.
 
-### Teacher
-- Dynamic MCQ Engine with support for time limits, custom conditions, and automated grading.
-- Document Digitization: Automatic parsing of Word (.docx) and PowerPoint (.pptx) files into study materials.
-- Managed Classrooms: Dedicated virtual spaces for resource distribution and live meetings.
-- Real-time Polls: Instant classroom feedback through live polling systems.
+### 📡 Real-Time Engagement
+*   **Live Dashboards**: Interactive student and teacher dashboards powered by **Socket.io** for instant performance updates.
+*   **Global Leaderboard**: Gamified ranking system to foster healthy competition among students.
+*   **Live Polls & Discussions**: Instant classroom feedback and collaborative discussion boards.
 
-### Student
-- Personalized Dashboard: Graphical progress tracking with performance analytics.
-- AI Study Assistant: Automated MCQ generation and summarization from study materials.
-- Global Leaderboard: Competitive ranking system based on quiz achievements.
-- Synced Video Learning: Interactive tutorials featuring auto-scrolling transcripts.
+### ⚙️ Workflow Automation
+*   **n8n Integration**: Automated email notification system for quiz assignments, submissions, and grading alerts.
+*   **Document Digitization**: Seamless conversion of `.docx`, `.pptx`, and video transcripts into searchable study resources.
 
-## Project Structure
+---
 
+## 🛠️ Tech Stack
+
+### **Frontend**
+*   **Framework**: React 19 (Vite)
+*   **Styling**: Tailwind CSS v4 (Neo-Brutalist Design System)
+*   **Animations**: Framer Motion
+*   **Real-time**: Socket.io-client
+*   **Charts**: Recharts
+
+### **Backend**
+*   **Runtime**: Node.js & Express
+*   **Database**: MongoDB (Mongoose)
+*   **NLP Engine**: Natural (Tokenizers, Stemmers, TF-IDF)
+*   **Real-time**: Socket.io
+*   **Automation**: n8n Webhooks
+
+### **APIs & Services**
+*   **Deepgram**: High-precision speech-to-text for video transcription.
+*   **SerpApi**: Synchronized YouTube search and resource discovery.
+*   **Jitsi**: Integrated open-source video conferencing.
+
+---
+
+## 🎨 Design Philosophy
+IntelliClass features a **Premium Neo-Brutalist** aesthetic, characterized by high-contrast colors, bold borders, and smooth micro-animations. This design ensures clarity, focus, and a modern feel that keeps students engaged.
+
+---
+
+## 📦 Project Structure
 ```text
-react_quiz/
-├── frontend/     # React.js (Vite) application
-└── backend/      # Node.js (Express) server
+IntelliClass/
+├── frontend/     # React.js application
+├── backend/      # Node.js server & NLP logic
+└── n8n/          # Automation workflow exports
 ```
 
-## Deployment
+---
 
-The platform is optimized for production deployment:
-- **Frontend**: Hosted on Vercel with SPA routing enabled.
-- **Backend**: Hosted on Render to maintain persistent WebSocket (Socket.io) connections.
+## 🛠️ Installation & Setup
 
-## Local Configuration
+### 1. Backend Setup
+1.  Navigate to `/backend`.
+2.  Run `npm install`.
+3.  Create a `.env` file with:
+    ```env
+    PORT=8080
+    MONGODB_URI=your_mongodb_uri
+    JWT_SECRET=your_secret
+    ENCRYPT_KEY=your_key
+    ```
+4.  Run `npm start`.
 
-To run the project locally:
+### 2. Frontend Setup
+1.  Navigate to `/frontend`.
+2.  Run `npm install`.
+3.  Create a `.env` file with:
+    ```env
+    VITE_API_BASE_URL=http://localhost:8080
+    VITE_DEEPGRAM_API_KEY=your_key
+    ```
+4.  Run `npm run dev`.
 
-1.  **Backend**:
-    - Navigate to `/backend`.
-    - Run `npm install`.
-    - Configure `.env` with `MONGODB_URI`, `GEMINI_API_KEY`, `JWT_SECRET`, and `ENCRYPT_KEY`.
-    - Run `npm start`.
+---
 
-2.  **Frontend**:
-    - Navigate to `/frontend`.
-    - Run `npm install`.
-    - Configure `.env` with `VITE_API_BASE_URL`, `VITE_API_KEY`, and `VITE_DEEPGRAM_API_KEY`.
-    - Run `npm run dev`.
+## 🛡️ Privacy & Performance
+By utilizing custom rule-based algorithms instead of large language models, IntelliClass ensures:
+1.  **Zero Latency**: Instant response times for quiz generation and assistant queries.
+2.  **Data Sovereignty**: Student data never leaves the platform's secure environment.
+3.  **Reliability**: No dependency on external AI API uptime or cost fluctuations.
