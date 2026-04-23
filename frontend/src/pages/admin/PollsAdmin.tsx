@@ -41,7 +41,7 @@ const PollsAdmin: React.FC = () => {
     const [reassignTime, setReassignTime] = useState<string>("");
     const [loadingButtons, setLoadingButtons] = useState<Record<string, boolean>>({});
     const { addToast } = useToast();
-    const sessionRefreshRef = useRef<NodeJS.Timeout | null>(null);
+    const sessionRefreshRef = useRef<any | null>(null);
 
     useEffect(() => {
         (async () => {

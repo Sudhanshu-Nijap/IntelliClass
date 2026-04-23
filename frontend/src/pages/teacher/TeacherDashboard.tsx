@@ -19,7 +19,7 @@ import {
   PlusCircleIcon,
   CalendarIcon,
 } from "../../components/Icons";
-import type { Difficulty } from "../../types";
+// Removed unused type imports
 // Remove Gemini service imports
 import { BASE, api } from "../../services/api";
 import {
@@ -47,7 +47,7 @@ const TeacherDashboard = () => {
   ]);
 
   const [numQuestions, setNumQuestions] = useState(10);
-  const [difficulty, setDifficulty] = useState<Difficulty>('Medium');
+  // difficulty state removed as it is unused
   const [error, setError] = useState("");
 
   const students = useRef<any[]>([]);

@@ -1,25 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { useToast } from "../../components/ui";
-import type { Quiz } from "../../types";
+// Removed unused type imports
 // Remove Gemini service imports
 import {
   AnimatedWrapper,
   StaggeredList,
 } from "../../components/shared/AnimatedComponents";
-import MultiSelectDropdown from "../../components/shared/MultiSelectDropdown";
+// Removed unused MultiSelectDropdown
 import { Button, Card, Modal, Spinner, Tabs } from "../../components/ui";
 import { BASE } from "../../services/api";
 import {
   UploadIcon,
-  XCircleIcon,
   PlusCircleIcon,
 } from "../../components/Icons";
 import { api } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
-  const { addQuiz, addResource, removeUser } = useAppContext();
+  const { addResource, removeUser } = useAppContext();
   const navigate = useNavigate();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState("Manage Students");
@@ -46,12 +45,12 @@ const AdminDashboard = () => {
       const tData = (data || []).filter((u: any) => u.role === "TEACHER");
       setStudents(sData);
       setTeachers(tData);
-      setStudentOptions(sData.map((s: any) => ({ id: s._id || s.id, name: s.name })));
+      // setStudentOptions removed as it is unused
     };
     fetchData();
   }, []);
 
-  const [studentOptions, setStudentOptions] = useState<{ id: string, name: string }[]>([]);
+  // Removed unused studentOptions state
 
 
 

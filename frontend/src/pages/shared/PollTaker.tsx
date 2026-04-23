@@ -23,7 +23,7 @@ const PollTaker: React.FC = () => {
     const [connectionError, setConnectionError] = useState(false);
     const intervalRef = useRef<number | null>(null);
     const timerRef = useRef<number | null>(null);
-    const sessionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const sessionTimeoutRef = useRef<any | null>(null);
 
     useEffect(() => {
         let mounted = true;
