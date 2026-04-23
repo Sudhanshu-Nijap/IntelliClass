@@ -1,96 +1,92 @@
-# 🎓 IntelliClass
+# IntelliClass
 
-**IntelliClass** is a high-performance, privacy-conscious Learning Management System (LMS) designed to optimize student and teacher productivity through advanced automation and real-time analytics. Unlike traditional platforms, IntelliClass leverages **custom algorithmic engines** and **rule-based NLP** to provide a secure, fast, and highly engaging educational experience.
+IntelliClass is a **High-Performance, Privacy-Conscious Learning Management System (LMS)** designed to bridge the gap between educational content and student engagement. Built with a focus on automation and data sovereignty, it replaces traditional LLM-dependency with a high-precision, **custom rule-based NLP and algorithmic engine**.
 
----
+## 🚀 Key Highlights
 
-## 🚀 Key Features
-
-### 🧠 Algorithmic Quiz Engine
-*   **Automated MCQ Generation**: Uses custom NLP logic (TF-IDF and Porter Stemming) to extract key concepts from study materials and transcripts to generate relevant quizzes instantly.
-*   **Context-Aware Scoring**: An algorithmic scoring system evaluates sentence quality to ensure high-relevance assessment questions.
-
-### 🤖 Rule-Based Smart Assistant
-*   **Privacy-First Insights**: A personal study assistant that uses **Levenshtein Distance fuzzy matching** to answer student queries about their performance, strengths, and weaknesses.
-*   **Intent Dispatcher**: Advanced logic to understand student goals (stats, history, topic mastery) without sending data to external LLMs.
-
-### 📡 Real-Time Engagement
-*   **Live Dashboards**: Interactive student and teacher dashboards powered by **Socket.io** for instant performance updates.
-*   **Global Leaderboard**: Gamified ranking system to foster healthy competition among students.
-*   **Live Polls & Discussions**: Instant classroom feedback and collaborative discussion boards.
-
-### ⚙️ Workflow Automation
-*   **n8n Integration**: Automated email notification system for quiz assignments, submissions, and grading alerts.
-*   **Document Digitization**: Seamless conversion of `.docx`, `.pptx`, and video transcripts into searchable study resources.
+- **Privacy-First Architecture**: Implements **AES-256 encryption** for all assessment data (questions, options, and results) at rest, ensuring academic integrity and data privacy.
+- **Custom NLP Engine**: Leverages the `natural` language processing library for high-speed, local MCQ generation and content summarization, eliminating the need for external AI API calls.
+- **Automated Workflows**: Integrated with **n8n** to handle complex event-driven tasks like automated quiz assignment notifications and gradebook sync.
+- **Real-time Engagement**: Powered by **Socket.io** for live leaderboards, instant classroom notifications, and synchronous discussion forums.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Core Technology Stack
 
-### **Frontend**
-*   **Framework**: React 19 (Vite)
-*   **Styling**: Tailwind CSS v4 (Neo-Brutalist Design System)
-*   **Animations**: Framer Motion
-*   **Real-time**: Socket.io-client
-*   **Charts**: Recharts
+### Backend (Node.js & Express)
+- **Database**: MongoDB (Mongoose ODM) with encrypted fields.
+- **NLP & Logic**: `Natural` NLP, custom regex-based parsing, and algorithmic quiz generation.
+- **Security**: AES-256 encryption (`aes256`), JWT authentication, and Bcrypt password hashing.
+- **Real-time**: Socket.io namespaces for segmented event handling (Leaderboard, Assignments, Discussions).
+- **Transcription**: Deepgram SDK v5 for high-accuracy speech-to-text.
+- **Parsing**: `Mammoth` (.docx), `pdf-parse`, and `XLSX` for multi-format document digitization.
 
-### **Backend**
-*   **Runtime**: Node.js & Express
-*   **Database**: MongoDB (Mongoose)
-*   **NLP Engine**: Natural (Tokenizers, Stemmers, TF-IDF)
-*   **Real-time**: Socket.io
-*   **Automation**: n8n Webhooks
-
-### **APIs & Services**
-*   **Deepgram**: High-precision speech-to-text for video transcription.
-*   **SerpApi**: Synchronized YouTube search and resource discovery.
-*   **Jitsi**: Integrated open-source video conferencing.
+### Frontend (React & Vite)
+- **UI/UX**: Tailwind CSS (v4) with a modern, high-contrast design system.
+- **Animations**: Framer Motion for smooth micro-animations and transitions.
+- **State Management**: React Hooks & Context API.
+- **Visualization**: Recharts for performance analytics and student progress tracking.
 
 ---
 
-## 🎨 Design Philosophy
-IntelliClass features a **Premium Neo-Brutalist** aesthetic, characterized by high-contrast colors, bold borders, and smooth micro-animations. This design ensures clarity, focus, and a modern feel that keeps students engaged.
+## 🎭 Role-Based Feature Set
+
+### 🛡️ Administrator
+- **Advanced User Control**: Manage student/teacher lifecycle and permissions.
+- **Audit Logs**: Monitor platform-wide resource allocation and security status.
+- **Analytics**: High-level institutional performance oversight.
+
+### 🎓 Teacher
+- **Automated MCQ Engine**: Convert uploaded documents (.docx, .pdf, .pptx) or YouTube URLs into structured quizzes instantly.
+- **Smart Classrooms**: Create dedicated virtual spaces with integrated Jitsi video meetings.
+- **Live Polling**: Real-time interactive sessions with instant result visualization.
+- **Resource Management**: Distribute materials with granular access controls.
+
+### 📝 Student
+- **Interactive Dashboard**: Track points, ranking, and topic-specific performance.
+- **Smart Video Learning**: Synchronized YouTube playback with auto-scrolling transcripts and search.
+- **Global Leaderboard**: Gamified competitive ranking based on academic achievements.
+- **Unified Discussions**: Collaborate on topics with real-time reply notifications.
 
 ---
 
-## 📦 Project Structure
-```text
-IntelliClass/
-├── frontend/     # React.js application
-├── backend/      # Node.js server & NLP logic
-└── n8n/          # Automation workflow exports
-```
+## 📦 Getting Started
 
----
+### Prerequisites
+- Node.js (v18+)
+- MongoDB Atlas account or local instance
+- Deepgram API Key (for transcription)
+- SerpApi Key (for video search)
 
-## 🛠️ Installation & Setup
+### Installation
 
-### 1. Backend Setup
-1.  Navigate to `/backend`.
-2.  Run `npm install`.
-3.  Create a `.env` file with:
-    ```env
-    PORT=8080
-    MONGODB_URI=your_mongodb_uri
-    JWT_SECRET=your_secret
-    ENCRYPT_KEY=your_key
+1.  **Clone the Repository**:
+    ```bash
+    git clone https://github.com/Sudhanshu-Nijap/IntelliClass.git
+    cd IntelliClass
     ```
-4.  Run `npm start`.
 
-### 2. Frontend Setup
-1.  Navigate to `/frontend`.
-2.  Run `npm install`.
-3.  Create a `.env` file with:
-    ```env
-    VITE_API_BASE_URL=http://localhost:8080
-    VITE_DEEPGRAM_API_KEY=your_key
+2.  **Backend Setup**:
+    ```bash
+    cd backend
+    npm install
+    # Create a .env file with:
+    # MONGODB_URI, JWT_SECRET, ENCRYPT_KEY, DEEPGRAM_API_KEY, SERP_API_KEY, N8N_WEBHOOK_URL
+    npm run dev
     ```
-4.  Run `npm run dev`.
+
+3.  **Frontend Setup**:
+    ```bash
+    cd ../frontend
+    npm install
+    # Create a .env file with:
+    # VITE_API_BASE_URL=http://localhost:8080
+    npm run dev
+    ```
 
 ---
 
-## 🛡️ Privacy & Performance
-By utilizing custom rule-based algorithms instead of large language models, IntelliClass ensures:
-1.  **Zero Latency**: Instant response times for quiz generation and assistant queries.
-2.  **Data Sovereignty**: Student data never leaves the platform's secure environment.
-3.  **Reliability**: No dependency on external AI API uptime or cost fluctuations.
+## 🔒 Security & Compliance
+IntelliClass is built for environments where data sensitivity is paramount. By utilizing local NLP processing and military-grade encryption, we ensure that educational data never leaves your controlled environment for training third-party models.
+
+---
