@@ -26,7 +26,7 @@ async function request(path: string, opts: RequestInit = {}) {
             path === '/api/results' ||
             path === '/api/assignments';
 
-        if (isAuthRoute) {
+        if (isAuthRoute && opts.method && opts.method !== 'GET') {
             console.warn(`Auth required but token missing for: ${path}. User may need to re-login.`);
         }
     }

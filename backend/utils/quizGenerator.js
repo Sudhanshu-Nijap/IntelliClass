@@ -56,9 +56,9 @@ function scoreSentence(sentence, keyword) {
     const lowerS = sentence.toLowerCase();
     let score = 0;
 
-    // 1. Length scoring (prefer 60-150 chars)
-    if (sentence.length >= 60 && sentence.length <= 150) score += 20;
-    else if (sentence.length > 40 && sentence.length <= 250) score += 10;
+    // 1. Length scoring (prefer 40-180 chars)
+    if (sentence.length >= 40 && sentence.length <= 180) score += 20;
+    else if (sentence.length > 20 && sentence.length <= 300) score += 10;
     else return -100; // Too short or too long
 
     // 2. Keyword density (if keyword is in sentence)
@@ -125,12 +125,21 @@ function generateMCQs(text, numQuestions = 5) {
         const { keyword, sentence } = cand;
 
         // Create distractors from other high-quality keywords
-        const distractors = keywords
+        let distractors = keywords
             .filter(kb => kb !== keyword && !sentence.toLowerCase().includes(kb.toLowerCase()))
             .sort(() => 0.5 - Math.random())
             .slice(0, 3);
 
-        if (distractors.length < 3) continue;
+        // Fallback distractors if we don't have enough keywords
+        if (distractors.length < 3) {
+            const fillers = ["Concept", "Study", "Example", "Theory", "Application", "Method"];
+            while (distractors.length < 3) {
+                const fill = fillers[Math.floor(Math.random() * fillers.length)];
+                if (!distractors.includes(fill) && fill.toLowerCase() !== keyword.toLowerCase()) {
+                    distractors.push(fill);
+                }
+            }
+        }
 
         // Create options and shuffle
         const options = [keyword, ...distractors].sort(() => 0.5 - Math.random());

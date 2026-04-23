@@ -67,6 +67,9 @@ mongoose
   })
   .then(() => {
     console.log("Connected to MongoDB successfully");
+    server.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
   })
   .catch((err) => {
     console.error("MongoDB Connection Error!");
@@ -1271,8 +1274,8 @@ app.get("/api/users/:id/analytics", authenticateJWT, async (req, res) => {
       correct: stats.correct
     })).sort((a, b) => b.score - a.score);
 
-    const strengths = allTopics.filter(t => t.total >= 3 && t.score >= 80);
-    const weaknesses = allTopics.filter(t => t.total >= 3 && t.score <= 55);
+    const strengths = allTopics.filter(t => t.total >= 1 && t.score >= 80);
+    const weaknesses = allTopics.filter(t => t.total >= 1 && t.score <= 55);
 
     // Query 3: Get user info for personalization
     const user = await User.findById(userId).select('name role').lean();
@@ -1674,6 +1677,4 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+// server.listen was moved to the mongoose.connect .then block to ensure DB is ready first.

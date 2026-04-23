@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+// AppRouter component
+
 import {
   HashRouter,
   Routes,
@@ -32,6 +34,7 @@ import Learning from "../pages/shared/Learning";
 import { Header } from "../components/shared/Header";
 import { Spinner } from "../components/ui";
 import { SmartAssistant } from "../components/shared/SmartAssistant";
+
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({
   children,

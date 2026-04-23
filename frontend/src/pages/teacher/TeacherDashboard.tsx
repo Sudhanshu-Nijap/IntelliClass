@@ -38,6 +38,8 @@ const TeacherDashboard = () => {
   const [isCreating, setIsCreating] = useState(false);
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
   const [isGeneratingFromPDF, setIsGeneratingFromPDF] = useState(false);
+  const [uploadingResource, setUploadingResource] = useState(false);
+  const resourceInputRef = useRef<HTMLInputElement | null>(null);
 
   const [manualTitle, setManualTitle] = useState("");
   const [manualQuestions, setManualQuestions] = useState<any>([
@@ -343,8 +345,8 @@ const TeacherDashboard = () => {
               <h3 className="text-2xl font-black uppercase mb-6 text-black border-b-4 border-black pb-2">
                 Performance Overview
               </h3>
-              <div className="h-[250px] sm:h-[300px] w-full" style={{ minWidth: 0 }}>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <div className="h-[300px] w-full min-h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={studentPerformance}
                     margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
