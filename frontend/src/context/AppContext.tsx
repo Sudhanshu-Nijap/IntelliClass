@@ -1,0 +1,361 @@
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  type User,
+  type Quiz,
+  type QuizResult,
+  type Resource,
+  type QuizAssignment,
+  type DiscussionPost,
+} from "../types";
+// removed local DB usage
+import { usePersistentState } from "../hooks/usePersistentState";
+// Remove startChat import
+import { api, BASE } from "../services/api";
+import axios from "axios";
+
+// --- APP CONTEXT ---
+interface AppContextType {
+  currentUser: User | null;
+  login: (user: User) => void;
+  logout: () => void;
+  users: User[];
+  quizzes: Quiz[];
+  results: QuizResult[];
+  assignments: QuizAssignment[];
+  resources: Resource[];
+  discussionPosts: DiscussionPost[];
+  addQuiz: (
+    quiz: Quiz,
+    assignment: Omit<QuizAssignment, "id" | "quizId" | "_id">
+  ) => Promise<{ newQuiz: Quiz; newAssignment: QuizAssignment }>;
+  deleteQuiz: (quizId: string) => Promise<void>;
+  updateQuiz: (quizId: string, updatedData: { title?: string, pool?: any[] }) => Promise<void>;
+  addResult: (result: QuizResult) => void;
+  addResource: (resource: Resource) => void;
+  removeUser: (userId: string) => void;
+  updateUserPoints: (userId: string, points: number) => void;
+  addPost: (
+    postData: Omit<DiscussionPost, "id" | "createdAt" | "replies">
+  ) => void;
+}
+
+const AppContext = React.createContext<AppContextType | null>(null);
+
+export const useAppContext = () => {
+  const context = React.useContext(AppContext);
+  if (!context)
+    throw new Error("useAppContext must be used within an AppProvider");
+  return context;
+};
+
+// Helper function to normalize user data
+const normalizeUser = (user: any): User => ({
+  id: user._id || user.id,
+  _id: user._id || user.id, // Keep _id for backend compatibility
+  name: user.name,
+  role: user.role,
+  points: user.points ?? 0,
+  token: user.token, // Preserve token if present
+});
+
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [currentUser, setCurrentUser] = usePersistentState<User | null>(
+    "currentUser",
+    null
+  );
+  const [users, setUsers] = useState<User[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [results, setResults] = useState<QuizResult[]>([]);
+  const [assignments, setAssignments] = useState<QuizAssignment[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [discussionPosts, setDiscussionPosts] = useState<DiscussionPost[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [, setBackendAvailable] = useState(false);
+
+  // Calculate total points for a user from results
+  const calculateUserPoints = (
+    userId: string,
+    allResults: QuizResult[],
+    allQuizzes: Quiz[]
+  ): number => {
+    const practiceQuizIds = new Set(
+      allQuizzes.filter((q) => q.isPractice).map((q) => q._id || q.id)
+    );
+    return (allResults || [])
+      .filter((r) => r.userId === userId && !practiceQuizIds.has(r.quizId))
+      .reduce((sum, r) => sum + (r.score || 0), 0);
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      // Always fetch from backend; no local DB fallback
+      const healthy = await api.health();
+      if (!mounted) return;
+      setBackendAvailable(!!healthy);
+      try {
+        const [
+          usersResp,
+          quizzesResp,
+          resourcesResp,
+          postsResp,
+          resultsResp,
+          assignmentsResp,
+        ] = await Promise.all([
+          api.getUsers(),
+          api.getQuizzes(),
+          api.getResources(),
+          api.getPosts(),
+          api.getResults(),
+          api.getAssignments(),
+        ]);
+
+        const normUsers = (usersResp || []).map((u: any) => normalizeUser(u));
+        const normQuizzes = (quizzesResp || []).map((q: any) => ({
+          id: q._id || q.id,
+          _id: q._id || q.id,
+          title: q.title,
+          questionPool: q.questionPool || [],
+          createdBy: q.createdBy || q.createdBy,
+          isPractice: q.isPractice,
+        }));
+        const normResources = (resourcesResp || []).map((r: any) => ({
+          id: r._id || r.id,
+          _id: r._id || r.id,
+          title: r.title,
+          content: r.content,
+          type: r.type,
+        }));
+        const normPosts = (postsResp || []).map((p: any) => ({
+          id: p._id || p.id,
+          _id: p._id || p.id,
+          title: p.title,
+          content: p.content,
+          authorId: p.authorId,
+          createdAt: p.createdAt,
+          replies: (p.replies || []).map((rep: any) => ({
+            id: rep._id || rep.id,
+            _id: rep._id || rep.id,
+            authorId: rep.authorId,
+            content: rep.content,
+            createdAt: rep.createdAt,
+          })),
+        }));
+
+        const resultsList = resultsResp || [];
+        // Derive points from results to keep UI consistent
+        const usersWithPoints = normUsers.map((u: User) => ({
+          ...u,
+          points: calculateUserPoints(u._id || u.id, resultsList, normQuizzes),
+        }));
+
+        setUsers(usersWithPoints);
+        setQuizzes(normQuizzes);
+        setResults(resultsList);
+        setAssignments(assignmentsResp || []);
+        setResources(normResources);
+        setDiscussionPosts(normPosts);
+        setIsDataLoaded(true);
+      } catch (err) {
+        console.error("Failed to load data from backend:", err);
+        setIsDataLoaded(true);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const login = async (user: any) => {
+    // Accept either { user, token } or raw user object
+    const payload = user.user ? user : { user };
+    const normalizedUser = normalizeUser(payload.user || payload);
+    // attach token if present
+    if (user.token) {
+      (normalizedUser as any).token = user.token;
+    } else if (payload.token) {
+      (normalizedUser as any).token = payload.token;
+    }
+
+    setCurrentUser(normalizedUser);
+  };
+
+  const logout = () => setCurrentUser(null);
+
+  const addQuiz = async (
+    quiz: Quiz,
+    assignment: Omit<QuizAssignment, "id" | "quizId" | "_id">
+  ): Promise<{ newQuiz: Quiz; newAssignment: QuizAssignment }> => {
+    const data = await api.createQuizWithAssignment({
+      quiz,
+      pool: quiz.questionPool || [],
+      assignment,
+    });
+    const newQuiz = data.quiz;
+    const newAssignment = data.assignment;
+
+    setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz]);
+    setAssignments((prevAssignments) => [...prevAssignments, newAssignment]);
+
+    return { newQuiz, newAssignment };
+  };
+
+  const addResult = async (result: QuizResult) => {
+    try {
+      const newResult = await api.submitQuizResult(result.quizId, result);
+      // Optimistically update results; points will be recalculated in the effect below
+      setResults((prev) => [...prev, newResult || result]);
+    } catch (error) {
+      console.error("Failed to submit quiz result:", error);
+      // Optionally, show an error to the user
+    }
+  };
+
+  const updateUserPoints = (userId: string, points: number) => {
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === userId || u._id === userId ? { ...u, points } : u
+      )
+    );
+  };
+
+  const addResource = (resource: Resource) => {
+    api
+      .addResource(resource as any)
+      .then((created: any) => {
+        setResources((prev) => [
+          ...prev,
+          {
+            ...resource,
+            id: created._id || created.id,
+            _id: created._id || created.id,
+          },
+        ]);
+      })
+      .catch((err) => {
+        console.error("Failed to add resource:", err);
+      });
+  };
+
+  const removeUser = async (userId: string) => {
+    const data = await axios.post(`${BASE}/api/delete`, {
+      userId,
+    });
+    // Normalize the returned users
+    const normalizedUsers = data.data.map((u: any) => normalizeUser(u));
+    setUsers(normalizedUsers);
+  };
+
+  const addPost = (
+    postData: Omit<DiscussionPost, "id" | "createdAt" | "replies">
+  ) => {
+    api
+      .addPost(postData as any)
+      .then((created: any) => {
+        const mapped = {
+          id: created._id || created.id,
+          _id: created._id || created.id,
+          title: created.title,
+          content: created.content,
+          authorId: created.authorId,
+          createdAt: created.createdAt,
+          replies: created.replies || [],
+        } as DiscussionPost;
+        setDiscussionPosts((prev) => [mapped, ...prev]);
+      })
+      .catch((err) => {
+        console.error("Failed to add post:", err);
+      });
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      const userId = currentUser._id || currentUser.id;
+      const updatedCurrentUser = users.find((u) => (u.id || u._id) === userId);
+      if (
+        updatedCurrentUser &&
+        updatedCurrentUser.points !== currentUser.points
+      ) {
+        const normalized = normalizeUser(updatedCurrentUser);
+        // Explicitly preserve token from existing session
+        if (currentUser.token) {
+          normalized.token = currentUser.token;
+        }
+        setCurrentUser(normalized);
+      }
+    }
+  }, [users, currentUser]);
+
+  // Keep user points in sync with results
+  useEffect(() => {
+    if (users.length === 0) return;
+    setUsers((prev) =>
+      prev.map((u) => ({
+        ...u,
+        points: calculateUserPoints(u._id || u.id, results, quizzes),
+      }))
+    );
+  }, [results, quizzes]);
+
+  const deleteQuiz = async (quizId: string) => {
+    try {
+      await api.deleteQuiz(quizId);
+      setQuizzes((prev) => prev.filter((q) => (q.id || q._id) !== quizId));
+      setAssignments((prev) => prev.filter((a) => a.quizId !== quizId));
+    } catch (err) {
+      console.error("Failed to delete quiz:", err);
+      throw err;
+    }
+  };
+
+  const updateQuiz = async (quizId: string, updatedData: { title?: string, pool?: any[] }) => {
+    try {
+      const updatedQuiz = await api.updateQuiz(quizId, updatedData);
+      setQuizzes((prev) => prev.map((q) => (q.id || q._id) === quizId ? updatedQuiz : q));
+    } catch (err) {
+      console.error("Failed to update quiz:", err);
+      throw err;
+    }
+  };
+
+  const contextValue = useMemo(
+    () => ({
+      currentUser,
+      login,
+      logout,
+      users,
+      quizzes,
+      results,
+      assignments,
+      resources,
+      discussionPosts,
+      addQuiz,
+      deleteQuiz,
+      updateQuiz,
+      addResult,
+      addResource,
+      removeUser,
+      updateUserPoints,
+      addPost,
+    }),
+    [
+      currentUser,
+      users,
+      quizzes,
+      results,
+      assignments,
+      resources,
+      discussionPosts,
+    ]
+  );
+
+  if (!isDataLoaded) {
+    return null;
+  }
+
+  return (
+    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
+  );
+};

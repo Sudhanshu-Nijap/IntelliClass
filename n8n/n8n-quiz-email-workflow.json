@@ -1,0 +1,137 @@
+{
+  "name": "Quiz Assignment Email Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "184b23d9-a226-444f-8086-5386f6f96614",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "b64a2a22-38b6-455b-b996-2ec2b55fdb6a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.body.studentEmails ? true : false }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "426f393f-a39f-4318-b223-28723c726359",
+      "name": "Validate Email",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "YOUR_SMTP_EMAIL@domain.com",
+        "senderName": "={{ $json.body.teacherName }}",
+        "toEmail": "={{ $json.body.studentEmails.join(',') }}",
+        "subject": "={{ $json.body.teacherName }} has assigned a new quiz: {{ $json.body.quizTitle }}",
+        "emailFormat": "html",
+        "text": "=<div style=\"font-family: 'Arial', sans-serif; background-color: #f4f4f5; padding: 40px 20px; text-align: center;\"><div style=\"max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 40px; border: 4px solid #000000; box-shadow: 6px 6px 0px #000000; text-align: left;\"><div style=\"text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 4px solid #000000;\"><span style=\"font-size: 36px; font-weight: 900; color: #000000; text-transform: uppercase;\">🎓 IntelliClass</span></div><h2 style=\"color: #000000; font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 16px;\">New Quiz Alert!</h2><p style=\"color: #000000; font-size: 16px; font-weight: 600; line-height: 1.5; margin-bottom: 24px;\">Get ready! Your teacher <strong>{{ $json.body.teacherName }}</strong> has just dropped a new quiz.</p><div style=\"background-color: #FFD600; padding: 20px; border: 4px solid #000000; box-shadow: 4px 4px 0px #000000; margin-bottom: 30px;\"><p style=\"margin: 0; color: #000000; font-size: 20px; font-weight: 900; text-transform: uppercase;\">{{ $json.body.quizTitle }}</p></div><div style=\"text-align: center; margin-top: 40px; margin-bottom: 20px;\"><a href=\"{{ $json.body.quizLink }}\" style=\"background-color: #000000; color: #FFD600; padding: 16px 32px; text-decoration: none; font-size: 18px; font-weight: 900; text-transform: uppercase; display: inline-block;\">START QUIZ →</a></div></div></div>",
+        "html": "=<div style=\"font-family: 'Arial', sans-serif; background-color: #f4f4f5; padding: 40px 20px; text-align: center;\"><div style=\"max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 40px; border: 4px solid #000000; box-shadow: 6px 6px 0px #000000; text-align: left;\"><div style=\"text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 4px solid #000000;\"><span style=\"font-size: 36px; font-weight: 900; color: #000000; text-transform: uppercase;\">🎓 IntelliClass</span></div><h2 style=\"color: #000000; font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 16px;\">New Quiz Alert!</h2><p style=\"color: #000000; font-size: 16px; font-weight: 600; line-height: 1.5; margin-bottom: 24px;\">Get ready! Your teacher <strong>{{ $json.body.teacherName }}</strong> has just dropped a new quiz.</p><div style=\"background-color: #FFD600; padding: 20px; border: 4px solid #000000; box-shadow: 4px 4px 0px #000000; margin-bottom: 30px;\"><p style=\"margin: 0; color: #000000; font-size: 20px; font-weight: 900; text-transform: uppercase;\">{{ $json.body.quizTitle }}</p></div><div style=\"text-align: center; margin-top: 40px; margin-bottom: 20px;\"><a href=\"{{ $json.body.quizLink }}\" style=\"background-color: #000000; color: #FFD600; padding: 16px 32px; text-decoration: none; font-size: 18px; font-weight: 900; text-transform: uppercase; display: inline-block;\">START QUIZ →</a></div></div></div>",
+        "options": {}
+      },
+      "id": "787c88a8-ea8c-4a17-b500-1c05cc77732d",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        680,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Emails sent to students\"\n}",
+        "options": {}
+      },
+      "id": "a9a3b6ab-1d94-44b4-a4f6-821f00885f81",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        900,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"message\": \"No student emails provided\"\n}",
+        "options": {}
+      },
+      "id": "e7b0a70f-155e-42c2-b52b-4d436a56e7de",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "f7efeb1f-3677-44fa-a55e-46a2a07535b6"
+}

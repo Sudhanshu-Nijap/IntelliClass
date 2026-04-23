@@ -1,0 +1,358 @@
+@import "tailwindcss";
+
+
+/* ============================================================
+   DESIGN TOKENS — Light / Dark Theme
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg: #fdfbf7;
+  /* Off-white warm background */
+  --surface: #ffffff;
+  --surface-2: #f4f4f4;
+  --surface-3: #eaeaea;
+
+  /* Borders */
+  --border: #000000;
+  --border-2: #000000;
+
+  /* Text */
+  --text: #000000;
+  --text-muted: #333333;
+  --text-subtle: #666666;
+
+  /* Accent — Neo Brutalism Colors */
+  --accent: #FF3B30;
+  /* Bold Red */
+  --accent-hover: #D32F2F;
+  --accent-light: #FF8A80;
+
+  --nb-yellow: #FFD600;
+  --nb-blue: #2962FF;
+  --nb-green: #00E676;
+  --nb-pink: #FF4081;
+
+  /* Status */
+  --success: #00E676;
+  --error: #FF3B30;
+  --warning: #FFD600;
+  --info: #2962FF;
+
+  /* Neo-Brutalism Hard Shadows */
+  --shadow-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  --shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-hover: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  /* Flattens on press */
+
+  /* Responsive Spacing */
+  --section-py: 3rem;
+  --container-px: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --section-py: 4.5rem;
+    --container-px: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --section-py: 6rem;
+    --container-px: 4rem;
+  }
+}
+
+html.dark {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --surface-2: #2a2a2a;
+  --surface-3: #333333;
+
+  --border: #ffffff;
+  --border-2: #dddddd;
+
+  --text: #ffffff;
+  --text-muted: #cccccc;
+  --text-subtle: #999999;
+
+  --accent: #FF3B30;
+  --accent-hover: #ff5252;
+
+  --nb-yellow: #FFD600;
+  --nb-blue: #448AFF;
+  --nb-green: #69F0AE;
+  --nb-pink: #FF4081;
+
+  --shadow-sm: 2px 2px 0px 0px rgba(255, 255, 255, 1);
+  --shadow: 4px 4px 0px 0px rgba(255, 255, 255, 1);
+  --shadow-lg: 8px 8px 0px 0px rgba(255, 255, 255, 1);
+  --shadow-hover: 2px 2px 0px 0px rgba(255, 255, 255, 1);
+}
+
+/* ============================================================
+   DARK MODE COMPATIBILITY OVERRIDES
+   Ensures hardcoded Tailwind classes work with theme variables
+   ============================================================ */
+html.dark .text-black { color: var(--text) !important; }
+html.dark .text-gray-900 { color: var(--text) !important; }
+html.dark .text-gray-800 { color: var(--text-muted) !important; }
+html.dark .text-gray-700 { color: var(--text-muted) !important; }
+html.dark .text-gray-600 { color: var(--text-subtle) !important; }
+
+html.dark .bg-white { background-color: var(--surface) !important; }
+html.dark .bg-gray-50 { background-color: var(--surface-2) !important; }
+html.dark .bg-gray-100 { background-color: var(--surface-3) !important; }
+
+html.dark .border-black { border-color: var(--border) !important; }
+html.dark .border-gray-200 { border-color: var(--surface-3) !important; }
+html.dark .border-gray-300 { border-color: var(--text-subtle) !important; }
+
+/* Recharts / Chart Overrides */
+html.dark .recharts-cartesian-grid-horizontal line,
+html.dark .recharts-cartesian-grid-vertical line {
+  stroke: var(--surface-3) !important;
+}
+html.dark .recharts-text {
+  fill: var(--text-subtle) !important;
+}
+html.dark .recharts-legend-item-text {
+  color: var(--text) !important;
+}
+
+
+/* ============================================================
+   GLOBAL BASE
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 13px;
+  /* Slightly smaller base */
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+
+/* ============================================================
+   FORM ELEMENT BASE STYLES (theme-aware)
+   Prevents Tailwind preflight / browser dark-mode from
+   forcing dark backgrounds on inputs/textareas/selects
+   ============================================================ */
+input,
+textarea,
+select {
+  background-color: var(--surface);
+  color: var(--text);
+  border: 3px solid var(--border);
+  border-radius: 0px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: var(--shadow);
+  transform: translate(-2px, -2px);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-subtle);
+}
+
+/* Neo-Brutalism Grid background pattern */
+.bg-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--border) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border) 5%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+}
+
+@media (min-width: 1024px) {
+  .bg-grid {
+    background-size: 48px 48px;
+  }
+}
+
+/* Neo-Brutalism Component Basics */
+.nb-card {
+  background-color: var(--surface);
+  border: 4px solid var(--border);
+  border-radius: 0px;
+  box-shadow: var(--shadow);
+}
+
+/* Section Utilities */
+.section-full {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 4rem;
+  /* For navbar */
+}
+
+@media (max-width: 1023px) {
+  .section-full {
+    height: auto;
+    min-height: auto;
+    padding-top: 10rem;
+    /* Increased to prevent clipping */
+    padding-bottom: 4rem;
+  }
+}
+
+.container-custom {
+  width: 100%;
+  max-width: 80rem;
+  /* 1280px */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-px);
+  padding-right: var(--container-px);
+}
+
+/* ============================================================
+   TRANSITIONS
+   ============================================================ */
+.theme-transition {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-2);
+  border-radius: 9999px;
+}
+
+/* ============================================================
+   Hide header in fullscreen
+   ============================================================ */
+:fullscreen header,
+:-webkit-full-screen header {
+  display: none !important;
+}
+
+:fullscreen .sticky,
+:-webkit-full-screen .sticky {
+  display: none !important;
+}
+
+/* ============================================================
+   RESPONSIVE UTILITIES & GRID HELPERS
+   ============================================================ */
+.grid-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .grid-stack-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-stack-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-stack-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Responsive Heading Scaling - Refined for "Medium/Compact" feel */
+h1 {
+  font-size: clamp(2rem, 7vw, 4.25rem);
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: clamp(1.1rem, 3.5vw, 2rem);
+  line-height: 1.2;
+}
+
+/* Horizontal Scroll for Tables on Mobile */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    border-left: 8px solid var(--border);
+  }
+
+  to {
+    transform: translateX(0);
+    border-left: 4px solid var(--border);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.2s cubic-bezier(0, 0, 0, 1);
+}
