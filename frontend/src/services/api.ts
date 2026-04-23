@@ -1,6 +1,6 @@
 import type { Quiz, QuizResult, Resource, DiscussionPost } from '../types';
 
-export const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+export const BASE = import.meta.env.VITE_URL || "http://localhost:8080";
 
 async function request(path: string, opts: RequestInit = {}) {
     // attach Authorization header if token is stored in localStorage currentUser
